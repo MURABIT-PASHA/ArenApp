@@ -1,10 +1,14 @@
-import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:arenapp/components/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:arenapp/components/constants.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:lottie/lottie.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ChatPage extends StatefulWidget {
@@ -20,23 +24,149 @@ class _ChatPageState extends State<ChatPage> {
   late User loggedInUser;
   late String messageText;
   late int number = 0;
-  var txt = TextEditingController();
+  TextEditingController txt = TextEditingController();
 
-  ButtonStyle steadyRecorderStyle = ElevatedButton.styleFrom(shape: CircleBorder(),primary: Colors.green,elevation: 10);
-  ButtonStyle recordingRecorderStyle = ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),primary: Colors.red,elevation: 10);
-  final recorder = FlutterSoundRecorder();
-  bool isRecorderReady = false;
+  //Speech variables starts here
+  bool _hasSpeech = false;
+  bool _logEvents = false;
+  bool _onDevice = false;
+  bool _isTurkish = false;
+  double level = 0.0;
+  double minSoundLevel = 50000;
+  double maxSoundLevel = -50000;
+  String lastWords = '';
+  String lastError = '';
+  String lastStatus = '';
+  String _currentLocaleId = '';
+  final SpeechToText speech = SpeechToText();
+  //Speech variables ends here
+
   @override
   void initState() {
-    super.initState();
-    initRecorder();
+    initSpeechState();
     getCurrentUser();
+    super.initState();
   }
 
-  @override
-  void dispose() {
-    recorder.closeRecorder();
-    super.dispose();
+  Future<void> initSpeechState() async {
+    _logEvent('Initialize');
+    try {
+      var hasSpeech = await speech.initialize(
+        onError: errorListener,
+        onStatus: statusListener,
+        debugLogging: _logEvents,
+      );
+      if (hasSpeech) {
+        var systemLocale = await speech.systemLocale();
+        _currentLocaleId = systemLocale?.localeId ?? '';
+      }
+      if (!mounted) return;
+
+      setState(() {
+        _hasSpeech = hasSpeech;
+      });
+    } catch (e) {
+      setState(() {
+        lastError = 'Speech recognition failed: ${e.toString()}';
+        _hasSpeech = false;
+      });
+    }
+  }
+
+  void startListening() {
+    _logEvent('start listening');
+    lastWords = '';
+    lastError = '';
+    final pauseFor = int.tryParse('3');
+    final listenFor = int.tryParse('50');
+    // Note that `listenFor` is the maximum, not the minimum, on some
+    // systems recognition will be stopped before this value is reached.
+    // Similarly `pauseFor` is a maximum not a minimum and may be ignored
+    // on some devices.
+    speech.listen(
+      onResult: resultListener,
+      listenFor: Duration(seconds: listenFor ?? 50),
+      pauseFor: Duration(seconds: pauseFor ?? 3),
+      partialResults: true,
+      localeId: _currentLocaleId,
+      onSoundLevelChange: soundLevelListener,
+      cancelOnError: true,
+      listenMode: ListenMode.confirmation,
+      onDevice: _onDevice,
+    );
+    setState(() {});
+  }
+
+  void stopListening() {
+    _logEvent('stop');
+    speech.stop();
+    setState(() {
+      level = 0.0;
+      print(lastWords);
+      txt.text = lastWords;
+    });
+  }
+
+  void cancelListening() {
+    _logEvent('cancel');
+    speech.cancel();
+    setState(() {
+      level = 0.0;
+    });
+  }
+
+  void resultListener(SpeechRecognitionResult result) {
+    _logEvent(
+        'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
+    setState(() {
+      lastWords = '${result.recognizedWords} - ${result.finalResult}';
+    });
+  }
+
+  void soundLevelListener(double level) {
+    minSoundLevel = min(minSoundLevel, level);
+    maxSoundLevel = max(maxSoundLevel, level);
+    // _logEvent('sound level $level: $minSoundLevel - $maxSoundLevel ');
+    setState(() {
+      this.level = level;
+    });
+  }
+
+  void errorListener(SpeechRecognitionError error) {
+    _logEvent(
+        'Received error status: $error, listening: ${speech.isListening}');
+    setState(() {
+      lastError = '${error.errorMsg} - ${error.permanent}';
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(lastError)));
+    });
+  }
+
+  void statusListener(String status) {
+    _logEvent(
+        'Received listener status: $status, listening: ${speech.isListening}');
+    setState(() {
+      lastStatus = '$status';
+    });
+  }
+
+  void _switchLang(selectedVal) {
+    setState(() {
+      _currentLocaleId = selectedVal;
+    });
+    print(selectedVal);
+  }
+
+  void _logEvent(String eventDescription) {
+    if (_logEvents) {
+      var eventTime = DateTime.now().toIso8601String();
+      print('$eventTime $eventDescription');
+    }
+  }
+
+  void _switchTurkish(bool? val) {
+    setState(() {
+      _isTurkish = val ?? false;
+    });
   }
 
   void getCurrentUser() async {
@@ -51,89 +181,97 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future initRecorder() async{
-    final status = await Permission.microphone.request();
-    if(status != PermissionStatus.granted){
-      throw 'Microphone permission not granted';
-    }
-    await recorder.openRecorder();
-    isRecorderReady = true;
-    recorder.setSubscriptionDuration(Duration(milliseconds: 500));
-  }
-
-  Future record() async {
-    if (!isRecorderReady) return;
-    await recorder.startRecorder(toFile: 'audio');
-  }
-
-  Future stop() async {
-    if (!isRecorderReady) return;
-    final path = await recorder.stopRecorder();
-    final audioFile = File(path!);
-    print('Recorded audio: $audioFile');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            StreamBuilderWidget(),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: txt,
-                    onChanged: (value) {
-                      messageText = value;
-                    },
-                    decoration: kTextFieldDecoration.copyWith(
-                      suffixIcon: AudioRecorder(),
-                      hintText: 'Type your message.',
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFF297739)),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Color(0xFF297739), width: 2.0),
-                        borderRadius: BorderRadius.circular(30.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/images/bg_chat.png"),
+                  fit: BoxFit.cover)),
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                top: 10,
+                left: 0,
+                right: 0,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: txt,
+                        onChanged: (value) {
+                          messageText = value;
+                        },
+                        decoration: kTextFieldDecoration.copyWith(
+                          hintText: "Type your message here",
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF297739)),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFF297739), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    IconButton(
+                      onPressed: () {
+                        txt.text = '';
+                        _firestore.collection('messages').add({
+                          'text': messageText,
+                          'sender': loggedInUser.email,
+                          'date': DateTime.now().microsecondsSinceEpoch,
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.near_me,
+                        color: Colors.teal,
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () {
-                    txt.text = '';
-                    _firestore.collection('messages').add({
-                      'text': messageText,
-                      'sender': loggedInUser.email,
-                      'date': DateTime.now().microsecondsSinceEpoch,
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.near_me,
-                    color: Colors.teal,
-                  ),
+              ),
+              Positioned(
+                top: 80,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.transparent,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height - 150,
+                  child: StreamBuilderWidget(),
                 ),
-              ],
-            ),
-          ],
+              ),
+              Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SpeechRecognitionWidget(
+                    lastWords: lastWords,
+                    level: level,
+                    hasSpeech: _hasSpeech,
+                    isListening: speech.isListening,
+                    startListening: startListening,
+                    stopListening: stopListening,
+                    cancelListening: cancelListening,
+                    txt: txt,
+                  )),
+            ],
+          ),
         ),
       ),
     );
   }
-  Widget StreamBuilderWidget(){
+
+  Widget StreamBuilderWidget() {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore.collection('messages').orderBy('date').snapshots(),
       builder: (context, snapshot) {
@@ -144,28 +282,31 @@ class _ChatPageState extends State<ChatPage> {
             final messageText = message.get('text');
             final messageSender = message.get('sender');
             //final int messageDate = message.get('date');
-            final dateHour = new DateTime.fromMicrosecondsSinceEpoch(message.get('date'))
-                .hour;
-            final dateMinute = new DateTime.fromMicrosecondsSinceEpoch(message.get('date'))
-                .minute;
-            if(messageSender == loggedInUser.email){
+            final dateHour =
+                new DateTime.fromMicrosecondsSinceEpoch(message.get('date'))
+                    .hour;
+            final dateMinute =
+                new DateTime.fromMicrosecondsSinceEpoch(message.get('date'))
+                    .minute;
+            if (messageSender == loggedInUser.email) {
               number = 1;
-            }else{
+            } else {
               number = 0;
             }
             final messageBubble = MessageBubble(
-                text: messageText, sender: messageSender,number: number,dateHour: dateHour,dateMinute: dateMinute);
+                text: messageText,
+                sender: messageSender,
+                number: number,
+                dateHour: dateHour,
+                dateMinute: dateMinute);
             messageBubbles.add(messageBubble);
           }
-          return Expanded(
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              physics: ScrollPhysics(),
-              reverse: true,
-              padding: EdgeInsets.symmetric(
-                  horizontal: 10, vertical: 10),
-              children: messageBubbles,
-            ),
+          return ListView(
+            scrollDirection: Axis.vertical,
+            physics: ScrollPhysics(),
+            reverse: true,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            children: messageBubbles,
           );
         } else {
           return Center();
@@ -173,35 +314,125 @@ class _ChatPageState extends State<ChatPage> {
       },
     );
   }
-  Widget AudioRecorder(){
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+}
+
+class SpeechRecognitionWidget extends StatelessWidget {
+  const SpeechRecognitionWidget({
+    Key? key,
+    required this.lastWords,
+    required this.level,
+    required this.hasSpeech,
+    required this.isListening,
+    required this.startListening,
+    required this.stopListening,
+    required this.cancelListening,
+    required this.txt,
+  }) : super(key: key);
+
+  final String lastWords;
+  final double level;
+  final bool hasSpeech;
+  final bool isListening;
+  final void Function() startListening;
+  final void Function() stopListening;
+  final void Function() cancelListening;
+  final TextEditingController txt;
+  @override
+  Widget build(BuildContext context) {
+    //lastWords
+    return Row(
       children: [
-        Visibility(
-          visible: recorder.isRecording,
-          child: StreamBuilder<RecordingDisposition>(
-              stream: recorder.onProgress,
-              builder: (context,snapshot){
-                final duration = snapshot.hasData ? snapshot.data!.duration : Duration.zero;
-                return Text('${duration.inSeconds}sn');
-              }),
+        Container(
+          height: 60,
+          width: (MediaQuery.of(context).size.width - 60) / 2,
+          child: Lottie.asset("assets/jsons/waves.json", animate: isListening),
         ),
-        ElevatedButton(
-          style: recorder.isRecording ? recordingRecorderStyle : steadyRecorderStyle,
-          onPressed: () async {
-            if (recorder.isRecording) {
-              await stop();
-            } else {
-              await record();
-            }
-            setState(() {});
+        GestureDetector(
+          onTap: () {
+            // Cancel
+            //isListening ? cancelListening : null;
           },
-          child: Icon(
-            recorder.isRecording ? Icons.stop : Icons.mic,
-            size: 20,
+          onLongPress: !hasSpeech || isListening ? null : startListening,
+          onLongPressUp: isListening ? stopListening : null,
+          child: Container(
+            width: 60,
+            height: 60,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: .26,
+                    spreadRadius: level * 1.5,
+                    color: Colors.black.withOpacity(.05))
+              ],
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(50)),
+            ),
+            child: Icon(
+              Icons.mic,
+              color: Colors.green,
+            ),
           ),
         ),
+        Container(
+            height: 60,
+            width: (MediaQuery.of(context).size.width - 60) / 2,
+            child:
+                Lottie.asset("assets/jsons/waves.json", animate: isListening)),
       ],
+    );
+  }
+}
+
+class ErrorWidget extends StatelessWidget {
+  const ErrorWidget({
+    Key? key,
+    required this.lastError,
+  }) : super(key: key);
+
+  final String lastError;
+
+  @override
+  Widget build(BuildContext context) {
+    return lastError == '' ? Container() : SnackBar(content: Text(lastError));
+  }
+}
+
+class LanguageOptionWidget extends StatelessWidget {
+  const LanguageOptionWidget(
+      this.switchLang, this.isTurkish, this.switchTurkish,
+      {Key? key})
+      : super(key: key);
+
+  final void Function(String?) switchLang;
+  final void Function(bool?) switchTurkish;
+  final bool isTurkish;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: [
+              Text('Language: '),
+              Switch(
+                value: isTurkish,
+                onChanged: (state) {
+                  if (state) {
+                    switchLang('tr_TR');
+                    switchTurkish(true);
+                  } else {
+                    switchLang('en_GB');
+                    switchTurkish(false);
+                  }
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
