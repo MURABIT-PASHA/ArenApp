@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:arenapp/components/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,15 +21,13 @@ class _ChatPageState extends State<ChatPage> {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
-  late String messageText;
   late int number = 0;
   TextEditingController txt = TextEditingController();
 
   //Speech variables starts here
   bool _hasSpeech = false;
-  bool _logEvents = false;
+  bool _logEvents = true;
   bool _onDevice = false;
-  bool _isTurkish = false;
   double level = 0.0;
   double minSoundLevel = 50000;
   double maxSoundLevel = -50000;
@@ -102,8 +99,6 @@ class _ChatPageState extends State<ChatPage> {
     speech.stop();
     setState(() {
       level = 0.0;
-      print(lastWords);
-      txt.text = lastWords;
     });
   }
 
@@ -119,14 +114,15 @@ class _ChatPageState extends State<ChatPage> {
     _logEvent(
         'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
     setState(() {
-      lastWords = '${result.recognizedWords} - ${result.finalResult}';
+      lastWords = '${result.recognizedWords}';
+      txt.text = lastWords;
+      print(lastWords);
     });
   }
 
   void soundLevelListener(double level) {
     minSoundLevel = min(minSoundLevel, level);
     maxSoundLevel = max(maxSoundLevel, level);
-    // _logEvent('sound level $level: $minSoundLevel - $maxSoundLevel ');
     setState(() {
       this.level = level;
     });
@@ -149,24 +145,12 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _switchLang(selectedVal) {
-    setState(() {
-      _currentLocaleId = selectedVal;
-    });
-    print(selectedVal);
-  }
 
   void _logEvent(String eventDescription) {
     if (_logEvents) {
       var eventTime = DateTime.now().toIso8601String();
       print('$eventTime $eventDescription');
     }
-  }
-
-  void _switchTurkish(bool? val) {
-    setState(() {
-      _isTurkish = val ?? false;
-    });
   }
 
   void getCurrentUser() async {
@@ -205,7 +189,9 @@ class _ChatPageState extends State<ChatPage> {
                       child: TextField(
                         controller: txt,
                         onChanged: (value) {
-                          messageText = value;
+                          if (txt.text!= ''){
+                            value = txt.text;
+                          }
                         },
                         decoration: kTextFieldDecoration.copyWith(
                           hintText: "Type your message here",
@@ -224,12 +210,19 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                     IconButton(
                       onPressed: () {
-                        txt.text = '';
-                        _firestore.collection('messages').add({
-                          'text': messageText,
-                          'sender': loggedInUser.email,
-                          'date': DateTime.now().microsecondsSinceEpoch,
-                        });
+                        if(txt.text!='') {
+                          _firestore.collection('messages').add({
+                            'text': txt.text,
+                            'sender': loggedInUser.email,
+                            'date': DateTime
+                                .now()
+                                .microsecondsSinceEpoch,
+                          });
+                          txt.text = '';
+                        }
+                        else{
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Message cannot be empty")));
+                        }
                       },
                       icon: const Icon(
                         Icons.near_me,
@@ -345,7 +338,7 @@ class SpeechRecognitionWidget extends StatelessWidget {
         Container(
           height: 60,
           width: (MediaQuery.of(context).size.width - 60) / 2,
-          child: Lottie.asset("assets/jsons/waves.json", animate: isListening),
+          child: Lottie.asset("assets/jsons/waves.json", animate: isListening, fit: BoxFit.fill),
         ),
         GestureDetector(
           onTap: () {
@@ -378,61 +371,8 @@ class SpeechRecognitionWidget extends StatelessWidget {
             height: 60,
             width: (MediaQuery.of(context).size.width - 60) / 2,
             child:
-                Lottie.asset("assets/jsons/waves.json", animate: isListening)),
+                Lottie.asset("assets/jsons/waves.json", animate: isListening, fit: BoxFit.fill)),
       ],
-    );
-  }
-}
-
-class ErrorWidget extends StatelessWidget {
-  const ErrorWidget({
-    Key? key,
-    required this.lastError,
-  }) : super(key: key);
-
-  final String lastError;
-
-  @override
-  Widget build(BuildContext context) {
-    return lastError == '' ? Container() : SnackBar(content: Text(lastError));
-  }
-}
-
-class LanguageOptionWidget extends StatelessWidget {
-  const LanguageOptionWidget(
-      this.switchLang, this.isTurkish, this.switchTurkish,
-      {Key? key})
-      : super(key: key);
-
-  final void Function(String?) switchLang;
-  final void Function(bool?) switchTurkish;
-  final bool isTurkish;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            children: [
-              Text('Language: '),
-              Switch(
-                value: isTurkish,
-                onChanged: (state) {
-                  if (state) {
-                    switchLang('tr_TR');
-                    switchTurkish(true);
-                  } else {
-                    switchLang('en_GB');
-                    switchTurkish(false);
-                  }
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
