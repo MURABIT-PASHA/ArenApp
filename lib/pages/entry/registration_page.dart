@@ -1,4 +1,3 @@
-import 'package:arenapp/components/alert_dialog.dart';
 import 'package:arenapp/components/rounded_button.dart';
 import 'package:arenapp/components/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -139,13 +138,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       Navigator.pushNamed(context, HomeScreen.id);
                     }
                   } catch (e) {
-                    await showDialog<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertPopUp(
-                              warningMessage: 'HATALI GİRİŞ!',
-                              warningDescription: 'Kullanıcı adı hatalı');
-                        });
                     print(email);
                     print(e);
                   }

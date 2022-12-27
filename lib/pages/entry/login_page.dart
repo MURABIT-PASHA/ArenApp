@@ -1,4 +1,3 @@
-import 'package:arenapp/components/alert_dialog.dart';
 import 'package:arenapp/components/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -137,21 +136,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       if (user.user != null) {
-        Navigator.pushNamedAndRemoveUntil(context, HomeScreen.id,(route) => false);
+        Navigator.pushNamedAndRemoveUntil(
+            context, HomeScreen.id, (route) => false);
       }
-    } catch (e) {
-      //numberOfRight--;
-      txt.text = '';
-      AlertPopUp(
-          warningMessage: 'HATALI GİRİŞ DENEMESİ',
-          warningDescription: 'Kalan Deneme Hakkınız: $numberOfRight');
-    }
-  }
-
-  bool textLocked() {
-    if (numberOfRight == 0)
-      return true;
-    else
-      return false;
+    } catch (e) {}
   }
 }

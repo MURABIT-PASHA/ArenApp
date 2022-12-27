@@ -19,13 +19,13 @@ class NavigationDrawer extends StatelessWidget {
           padding: padding,
           children: [
             const SizedBox(height: 48.0,),
-            buildMenuItem(text: 'Ayarlar', icon: Icons.settings,onClicked: ()=> selectedItem(context,0)),
+            buildMenuItem(text: 'Settings', icon: Icons.settings,onClicked: ()=> selectedItem(context,0)),
             const SizedBox(height: 16.0,),
-            buildMenuItem(text: 'Güncellemeler', icon: Icons.update,onClicked: ()=> selectedItem(context,1)),
+            buildMenuItem(text: 'Update', icon: Icons.update,onClicked: ()=> selectedItem(context,1)),
             const SizedBox(height: 24.0,),
             Divider(color: Colors.white70,),
             const SizedBox(height: 16.0,),
-            buildMenuItem(text: 'Çıkış Yap', icon: Icons.logout,onClicked: ()=> selectedItem(context,2)),
+            buildMenuItem(text: 'Log Out', icon: Icons.logout,onClicked: ()=> selectedItem(context,2)),
           ],
         ),
       ),
@@ -43,7 +43,6 @@ class NavigationDrawer extends StatelessWidget {
       title: Text(text, style: TextStyle(color: color),),
       hoverColor: hoverColor,
       onTap: onClicked,
-
     );
   }
 
