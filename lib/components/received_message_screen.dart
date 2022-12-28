@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-class ReceivedMessageScreen extends StatelessWidget {
+class MessageScreen extends StatelessWidget {
   final String message;
-  final String sender;
   final int dateHour;
   final int dateMinute;
-  const ReceivedMessageScreen(
-      {required this.sender, required this.message, required this.dateHour,required this.dateMinute});
+  const MessageScreen(
+      {required this.message, required this.dateHour,required this.dateMinute});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +27,6 @@ class ReceivedMessageScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  sender,
-                  style: TextStyle(color: Colors.cyan.shade900, fontSize: 10),
-                ),
                 Text(
                   message,
                   style: TextStyle(color: Colors.cyan.shade900, fontSize: 14),

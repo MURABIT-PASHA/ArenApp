@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 class SentMessageScreen extends StatelessWidget {
   final String message;
-  final String sender;
   final int dateHour;
   final int dateMinute;
   SentMessageScreen(
-      {required this.message, required this.sender, required this.dateHour,required this.dateMinute});
+      {required this.message, required this.dateHour,required this.dateMinute});
   @override
   Widget build(BuildContext context) {
     return Flexible(

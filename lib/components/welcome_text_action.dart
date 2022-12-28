@@ -1,10 +1,8 @@
 import 'package:arenapp/pages/entry/onboard_page.dart';
+import 'package:arenapp/pages/progress/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-
-import '../pages/entry/login_page.dart';
-import '../pages/entry/registration_page.dart';
 
 class WelcomeTextAction extends StatefulWidget {
   const WelcomeTextAction({Key? key}) : super(key: key);
@@ -14,26 +12,22 @@ class WelcomeTextAction extends StatefulWidget {
 }
 
 class _WelcomeTextActionState extends State<WelcomeTextAction> {
-  late String screen;
+  late Widget screen;
 
-  Future<String> getPreferences() async{
+  Future<Widget> getPreferences() async{
     final prefs = await SharedPreferences.getInstance();
     final showHome = prefs.getBool('showHome') ?? false;
-    final userMail = prefs.getString('userMailAddress') ?? 'defaultUser';
-    if(userMail != 'defaultUser' && showHome == true){
-     return LoginScreen.id;
-    }
-    else if(userMail == 'defaultUser' && showHome == true){
-      return RegistrationScreen.id;
+    if(showHome){
+     return HomePage();
     }
     else{
-      return OnboardPage.id;
+      return OnboardPage();
     }
   }
   void getScreen()async{
     screen = await getPreferences();
     setState(() {
-      Navigator.pushNamedAndRemoveUntil(context, screen, (route) => false);
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>screen), (route) => false);
     });
   }
   @override

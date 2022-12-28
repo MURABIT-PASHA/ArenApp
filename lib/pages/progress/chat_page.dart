@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:math';
+import 'package:arenapp/data/dbms/chat_database_manager.dart';
+import 'package:arenapp/data/model/conversation.dart';
 import 'package:flutter/material.dart';
 import 'package:arenapp/components/message_bubble.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:arenapp/components/constants.dart';
 import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -11,17 +12,16 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ChatPage extends StatefulWidget {
-  static const String id = 'chat_page';
-  const ChatPage({Key? key}) : super(key: key);
+  final String conversationName;
+  final List<Conversation> conversations;
+  final ChatDatabaseManager chatDatabase;
+  const ChatPage({Key? key, required this.conversations, required this.chatDatabase, required this.conversationName}) : super(key: key);
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
-  late int number = 0;
+
   TextEditingController txt = TextEditingController();
 
   //Speech variables starts here
@@ -37,11 +37,12 @@ class _ChatPageState extends State<ChatPage> {
   String _currentLocaleId = '';
   final SpeechToText speech = SpeechToText();
   //Speech variables ends here
-
+  StreamController<List<Conversation>> _conversationsStreamController = StreamController<List<Conversation>>();
   @override
   void initState() {
     initSpeechState();
-    getCurrentUser();
+    _conversationsStreamController = StreamController<List<Conversation>>();
+    _conversationsStreamController.add(widget.conversations);
     super.initState();
   }
 
@@ -153,17 +154,6 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void getCurrentUser() async {
-    try {
-      final user = await _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser.email);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,13 +201,8 @@ class _ChatPageState extends State<ChatPage> {
                     IconButton(
                       onPressed: () {
                         if(txt.text!='') {
-                          _firestore.collection('messages').add({
-                            'text': txt.text,
-                            'sender': loggedInUser.email,
-                            'date': DateTime
-                                .now()
-                                .microsecondsSinceEpoch,
-                          });
+                          Conversation conversation = Conversation(prompt: txt.text, number: 1, date: DateTime.now());
+                            widget.chatDatabase.add(conversation,widget.conversationName);
                           txt.text = '';
                         }
                         else{
@@ -264,31 +249,22 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget StreamBuilderWidget() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').orderBy('date').snapshots(),
+  Widget? StreamBuilderWidget() {
+    StreamBuilder<List<Conversation>>(
+      stream: _conversationsStreamController.stream,
       builder: (context, snapshot) {
-        if (snapshot.hasData == true) {
-          final messages = snapshot.data?.docs.reversed;
+        if (snapshot.hasData) {
+          final messages = snapshot.data;
           List<MessageBubble> messageBubbles = [];
           for (var message in messages!) {
-            final messageText = message.get('text');
-            final messageSender = message.get('sender');
-            //final int messageDate = message.get('date');
+            final messageText = message.prompt;
+            final number = message.number;
             final dateHour =
-                new DateTime.fromMicrosecondsSinceEpoch(message.get('date'))
-                    .hour;
+                message.date.hour;
             final dateMinute =
-                new DateTime.fromMicrosecondsSinceEpoch(message.get('date'))
-                    .minute;
-            if (messageSender == loggedInUser.email) {
-              number = 1;
-            } else {
-              number = 0;
-            }
+                message.date.minute;
             final messageBubble = MessageBubble(
-                text: messageText,
-                sender: messageSender,
+                prompt: messageText,
                 number: number,
                 dateHour: dateHour,
                 dateMinute: dateMinute);
@@ -301,11 +277,12 @@ class _ChatPageState extends State<ChatPage> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             children: messageBubbles,
           );
-        } else {
+        }else{
           return Center();
         }
       },
     );
+    return null;
   }
 }
 

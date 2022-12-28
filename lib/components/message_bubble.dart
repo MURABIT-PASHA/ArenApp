@@ -3,13 +3,12 @@ import 'package:arenapp/components/received_message_screen.dart';
 import 'package:arenapp/components/sent_message_screen.dart';
 
 class MessageBubble extends StatelessWidget {
-  final String sender;
-  final String text;
+  final String prompt;
   final int number;
   final int dateHour;
   final int dateMinute;
   const MessageBubble(
-      {required this.text, required this.sender, required this.number, required this.dateHour, required this.dateMinute});
+      {required this.prompt, required this.number, required this.dateHour, required this.dateMinute});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class MessageBubble extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               SizedBox(height: 30),
-              ReceivedMessageScreen(sender: sender, message: text, dateHour: dateHour,dateMinute: dateMinute),
+              MessageScreen(message: prompt, dateHour: dateHour,dateMinute: dateMinute),
             ],
           ),
         );
@@ -32,7 +31,7 @@ class MessageBubble extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               SizedBox(height: 30),
-              SentMessageScreen(sender: sender, message: text, dateHour: dateHour,dateMinute: dateMinute),
+              SentMessageScreen(message: prompt, dateHour: dateHour,dateMinute: dateMinute),
             ],
           ),
         );

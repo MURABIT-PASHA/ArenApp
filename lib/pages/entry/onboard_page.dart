@@ -1,4 +1,4 @@
-import 'package:arenapp/pages/entry/registration_page.dart';
+import 'package:arenapp/pages/progress/home_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:arenapp/pages/entry/models/onboard_model.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +105,7 @@ class _OnboardPage extends State<OnboardPage> {
           onPressed: () async {
             final prefs = await SharedPreferences.getInstance();
             prefs.setBool('showHome', true);
-            Navigator.pushNamedAndRemoveUntil(context, RegistrationScreen.id, (route) => false);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>HomePage()),(route) => false);
           },
         );
       default:

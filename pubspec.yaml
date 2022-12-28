@@ -11,21 +11,33 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
+  # Onboard Page, Chat Page
   animated_text_kit: ^4.2.1
   firebase_core: ^2.4.0
   firebase_auth: ^4.2.3
   cloud_firestore: ^4.3.0
-  firebase_storage: ^11.0.9
+  # Onboard Page
   smooth_page_indicator: ^1.0.0+2
+  # Onboard Page
   shared_preferences: ^2.0.12
+  # Onboard Page, ChatPage
   lottie: ^2.1.0
+  # ChatPage
   permission_handler: ^10.0.0
+  # Never Used
   curved_navigation_bar: ^1.0.1
+  # Never Used
   font_awesome_flutter: ^10.1.0
+  # Never Used
   image_picker: ^0.8.5+3
+  # Database
   path_provider: ^2.0.11
   expandable: ^5.0.1
+  # Chat Page
   speech_to_text: ^6.1.0
+  # Database
+  sqflite: ^2.2.2
+  dio: ^4.0.6
 
 
 
