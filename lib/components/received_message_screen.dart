@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-class MessageScreen extends StatelessWidget {
+class ReceivedMessageScreen extends StatelessWidget {
   final String message;
   final int dateHour;
   final int dateMinute;
-  const MessageScreen(
+  const ReceivedMessageScreen(
       {required this.message, required this.dateHour,required this.dateMinute});
 
   @override

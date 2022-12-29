@@ -20,7 +20,7 @@ class MessageBubble extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               SizedBox(height: 30),
-              MessageScreen(message: prompt, dateHour: dateHour,dateMinute: dateMinute),
+              ReceivedMessageScreen(message: prompt, dateHour: dateHour,dateMinute: dateMinute),
             ],
           ),
         );

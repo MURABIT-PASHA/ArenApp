@@ -37,7 +37,7 @@ class _ChatPageState extends State<ChatPage> {
   String _currentLocaleId = '';
   final SpeechToText speech = SpeechToText();
   //Speech variables ends here
-  StreamController<List<Conversation>> _conversationsStreamController = StreamController<List<Conversation>>();
+  late StreamController<List<Conversation>> _conversationsStreamController;
   @override
   void initState() {
     initSpeechState();
