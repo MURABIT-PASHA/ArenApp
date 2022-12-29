@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 class ReceivedMessageScreen extends StatelessWidget {
   final String message;
@@ -27,10 +28,11 @@ class ReceivedMessageScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  message,
-                  style: TextStyle(color: Colors.cyan.shade900, fontSize: 14),
-                  textAlign: TextAlign.left,
+                AnimatedTextKit(
+                  totalRepeatCount: 1,
+                  animatedTexts: [
+                    TypewriterAnimatedText(message,textStyle: TextStyle(color: Colors.cyan.shade900, fontSize: 14),textAlign: TextAlign.left,speed: Duration(milliseconds: 100)),
+                  ],
                 ),
                 Text(
                   '$dateHour:$dateMinute',

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:arenapp/data/dbms/chat_database_manager.dart';
 import 'package:arenapp/data/model/conversation.dart';
+import 'package:arenapp/data/model/open_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:arenapp/components/message_bubble.dart';
 import 'package:arenapp/components/constants.dart';
@@ -12,10 +12,8 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ChatPage extends StatefulWidget {
-  final String conversationName;
-  final List<Conversation> conversations;
-  final ChatDatabaseManager chatDatabase;
-  const ChatPage({Key? key, required this.conversations, required this.chatDatabase, required this.conversationName}) : super(key: key);
+  final String title;
+  const ChatPage({Key? key, required this.title}) : super(key: key);
   @override
   _ChatPageState createState() => _ChatPageState();
 }
@@ -37,12 +35,10 @@ class _ChatPageState extends State<ChatPage> {
   String _currentLocaleId = '';
   final SpeechToText speech = SpeechToText();
   //Speech variables ends here
-  late StreamController<List<Conversation>> _conversationsStreamController;
+
   @override
   void initState() {
     initSpeechState();
-    _conversationsStreamController = StreamController<List<Conversation>>();
-    _conversationsStreamController.add(widget.conversations);
     super.initState();
   }
 
@@ -154,7 +150,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-
+  List<Conversation> messages = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,11 +195,19 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
+                      onPressed: () async{
                         if(txt.text!='') {
-                          Conversation conversation = Conversation(prompt: txt.text, number: 1, date: DateTime.now());
-                            widget.chatDatabase.add(conversation,widget.conversationName);
-                          txt.text = '';
+                          Conversation _conversation1 = Conversation(prompt: txt.text, number: 1, date: DateTime.now());
+                          messages.add(_conversation1);
+                          setState(() {
+                          });
+                          OpenAI _openAI = OpenAI( prompt: txt.text,);
+                          var data = await _openAI.getResponse();
+                          Conversation _conversation2 = Conversation(prompt: data['choices'][0]['text'], number: 0, date: DateTime.now());
+                          messages.add(_conversation2);
+                          setState(() {
+                            txt.text = '';
+                          });
                         }
                         else{
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Message cannot be empty")));
@@ -225,7 +229,27 @@ class _ChatPageState extends State<ChatPage> {
                   color: Colors.transparent,
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height - 150,
-                  child: StreamBuilderWidget(),
+                  child: ListView.builder(
+                    controller: ScrollController(initialScrollOffset: 1),
+                    itemCount: messages.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      List<MessageBubble> messageBubbles = [];
+                      for (var message in messages) {
+                        final messageText = message.prompt;
+                        final number = message.number;
+                        final dateHour =
+                            message.date.hour;
+                        final dateMinute =
+                            message.date.minute;
+                        final messageBubble = MessageBubble(
+                            prompt: messageText,
+                            number: number,
+                            dateHour: dateHour,
+                            dateMinute: dateMinute);
+                        messageBubbles.add(messageBubble);
+                      }
+                      return messageBubbles[index];
+                    },),
                 ),
               ),
               Positioned(
@@ -249,41 +273,6 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget? StreamBuilderWidget() {
-    StreamBuilder<List<Conversation>>(
-      stream: _conversationsStreamController.stream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final messages = snapshot.data;
-          List<MessageBubble> messageBubbles = [];
-          for (var message in messages!) {
-            final messageText = message.prompt;
-            final number = message.number;
-            final dateHour =
-                message.date.hour;
-            final dateMinute =
-                message.date.minute;
-            final messageBubble = MessageBubble(
-                prompt: messageText,
-                number: number,
-                dateHour: dateHour,
-                dateMinute: dateMinute);
-            messageBubbles.add(messageBubble);
-          }
-          return ListView(
-            scrollDirection: Axis.vertical,
-            physics: ScrollPhysics(),
-            reverse: true,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            children: messageBubbles,
-          );
-        }else{
-          return Center();
-        }
-      },
-    );
-    return null;
-  }
 }
 
 class SpeechRecognitionWidget extends StatelessWidget {

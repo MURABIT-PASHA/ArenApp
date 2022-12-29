@@ -1,7 +1,8 @@
+import 'package:arenapp/components/constants.dart';
 import 'package:arenapp/components/navigation_drawer.dart';
-import 'package:arenapp/data/dbms/chat_database_manager.dart';
+import 'package:arenapp/components/rounded_button.dart';
+import 'package:arenapp/pages/progress/chat_page.dart';
 import 'package:flutter/material.dart';
-import 'models/conversation_info_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,22 +11,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _chatDatabaseManager = ChatDatabaseManager.instance;
-  late Future<List<dynamic>> _conversationNamesFuture;
+  String itemName = "Conversation";
+  final itemHint = "Add your conversation name";
+  List itemList = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _conversationNamesFuture = _chatDatabaseManager.init().then((_) {
-      return _chatDatabaseManager.getAllTableNames();
-    });
-  }
-
-  @override
-  void dispose() {
-    _chatDatabaseManager.close();
-    super.dispose();
-  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -38,60 +27,120 @@ class _HomePageState extends State<HomePage> {
             automaticallyImplyLeading: false,
             elevation: 20.0,
             shadowColor: Colors.black54,
-            title: Text("ArenApp", style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: 'UbuntuMono',
-                fontWeight: FontWeight.bold,
-                color: Colors.white),),
+            title: Text(
+              "ArenApp",
+              style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: 'UbuntuMono',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
             backgroundColor: Color(0xFF0E1937),
           ),
-          body: FutureBuilder<List<dynamic>>(
-            future: _conversationNamesFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.length > 0) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ConversationInfo(
-                        conversationName: snapshot.data![index],
-                        chatDatabaseManager: _chatDatabaseManager,
-                      );
-                    },
-                  );
-                } else {
-                  return Container(
-                    child: Center(
-                      child: Text("You have not conversation yet."),
+          body: ListView.builder(
+            itemCount: itemList.length,
+            itemBuilder: (BuildContext context, int index) {
+              final item = itemList[index];
+              return Dismissible(
+                key: Key(item),
+                background: Container(
+                  color: Colors.red,
+                  child: Center(
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                      size: 75,
                     ),
-                  );
-                }
-              } else if (snapshot.hasError) {
-                return Container(
-                  child: Center(
-                    child: Text("An error occurred: ${snapshot.error}"),
                   ),
-                );
-              } else {
-                return Container(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                ),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  setState(() {
+                    itemList.removeAt(index);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Conversation removed")));
+                },
+                child: Container(
+                  height: 100,
+                  width: MediaQuery.of(context).size.width,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (builder)=>ChatPage(title: itemList[index])));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CircleAvatar(
+                            radius: 40.0,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                itemList[index],
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ),
+                              Text(
+                                '0 messages',
+                                style: TextStyle(color: Colors.white70),
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                );
-              }
+                ),
+              );
             },
           ),
-          floatingActionButton: Card(
-            child: TextButton(
-              onPressed: () async {
-                await _chatDatabaseManager.createTableWithTimestamp();
-                setState((){
-                  _conversationNamesFuture =
-                      _chatDatabaseManager.getAllTableNames();
-                });
-              },
-              child: Text("Create New Conversation"),
-            ),
+          floatingActionButton: RoundedButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (builder) => Dialog(
+                        child: Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width - 100,
+                            height: MediaQuery.of(context).size.height -200,
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextField(
+                                  decoration: kTextFieldDecoration.copyWith(
+                                    hintText: itemHint,
+                                  ),
+                                  onChanged: (value) {
+                                      itemName = value;
+                                  },
+                                ),
+                                RoundedButton(
+                                    colour: Colors.black54,
+                                    buttonTitle: 'Create',
+                                    onPressed: () {
+                                      setState(() {
+                                        itemList.add(itemName);
+                                      });
+                                      Navigator.pop(context);
+                                    })
+                              ],
+                            ),
+                          ),
+                        ),
+                      ));
+            },
+            colour: Colors.black12,
+            buttonTitle: 'Create New Conversation',
           ),
         ),
       ),
