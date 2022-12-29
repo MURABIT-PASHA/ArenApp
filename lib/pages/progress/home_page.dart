@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
           extendBody: true,
           appBar: AppBar(
             centerTitle: true,
-            automaticallyImplyLeading: false,
             elevation: 20.0,
             shadowColor: Colors.black54,
             title: Text(

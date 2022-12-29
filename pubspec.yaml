@@ -21,7 +21,7 @@ dependencies:
   lottie: ^2.1.0
   # ChatPage
   permission_handler: ^10.0.0
-  # Never Used
+  # Drawer
   font_awesome_flutter: ^10.1.0
   # Database
   path_provider: ^2.0.11

@@ -1,8 +1,11 @@
 import 'package:arenapp/components/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class NavigationDrawer extends StatelessWidget {
   final padding = EdgeInsets.symmetric(horizontal: 20.0);
+  bool isTurkish = false;
+  String langName = "en_GB";
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -15,10 +18,10 @@ class NavigationDrawer extends StatelessWidget {
             const SizedBox(
               height: 48.0,
             ),
-            buildMenuItem(text: 'Mode', icon: Icons.settings, onClicked: () {}),
-            const SizedBox(
-              height: 16.0,
-            ),
+            SwitchListTile(
+                title: Text("Turkish",style: TextStyle(fontFamily: "Poppins",color: Colors.white),),
+                value: isTurkish, onChanged: (value){
+            }),
             Divider(
               color: Colors.white70,
             ),
@@ -26,7 +29,23 @@ class NavigationDrawer extends StatelessWidget {
               height: 16.0,
             ),
             buildMenuItem(
-                text: 'Language', icon: Icons.logout, onClicked: () {}),
+                text: 'Murabıt Akdoğan', icon: FontAwesomeIcons.linkedin, onClicked: () {}),
+            Divider(
+              color: Colors.white70,
+            ),
+            const SizedBox(
+              height: 16.0,
+            ),
+            buildMenuItem(
+                text: 'MURABIT-PASHA', icon: FontAwesomeIcons.github, onClicked: () {}),
+            Divider(
+              color: Colors.white70,
+            ),
+            const SizedBox(
+              height: 16.0,
+            ),
+            buildMenuItem(
+                text: 'Murabit The Magnificent', icon: FontAwesomeIcons.internetExplorer, onClicked: () {}),
           ],
         ),
       ),
@@ -47,7 +66,7 @@ class NavigationDrawer extends StatelessWidget {
       ),
       title: Text(
         text,
-        style: TextStyle(color: color),
+        style: TextStyle(color: color, fontFamily: "Poppins"),
       ),
       hoverColor: hoverColor,
       onTap: onClicked,

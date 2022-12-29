@@ -9,7 +9,6 @@ import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ChatPage extends StatefulWidget {
   final String title;
