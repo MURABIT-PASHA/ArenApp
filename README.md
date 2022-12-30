@@ -45,11 +45,11 @@ Instructions for building and releasing the app for production.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/[USERNAME]/flutter-app/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/MURABIT-PASHA/ArenApp/tags).
 
 ## Authors
 
-- [Your Name](https://github.com/[USERNAME])
+- [Your Name](https://github.com/MURABIT-PASHA)
 
 ## License
 
