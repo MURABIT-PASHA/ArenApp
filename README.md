@@ -1,7 +1,7 @@
 # ArenApp
 A mobile application built with Flutter.
 
-![Flutter App Demo](![Flutter App Demo](blob/demo.gif)
+![Flutter App Demo](blob/demo.gif)
 
 ## Getting Started
 
