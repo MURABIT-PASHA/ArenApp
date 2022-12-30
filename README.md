@@ -1,7 +1,7 @@
 # ArenApp
 A mobile application built with Flutter.
 
-![Flutter App Demo](https://github.com/MURABIT-PASHA/ArenApp/blob/master/demo.gif)
+![Flutter App Demo](https://github.com/MURABIT-PASHA/ArenApp/tree/blob/master/demo.gif)
 ## Getting Started
 
 1. Clone the repository: `git clone https://github.com/MURABIT-PASHA/ArenApp.git`
