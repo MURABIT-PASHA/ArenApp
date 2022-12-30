@@ -1,22 +1,59 @@
-# arenapp
+# ArenApp
+A mobile application built with Flutter.
 
-Private Message App
-
+![Flutter App Demo](https://github.com/MURABIT-PASHA/ArenApp/blob/master/demo.gif)
 ## Getting Started
-Öncelikle sürekli typo hatası almamak için burası hariç Türkçe kelime kullanmamaya özen gösterdim.
-Uygulamada birçok kütüphane kullandım ki bu da uygulamayı hantallaştırdı.
-Mesajlaşmak, görüntü almak vs. için firebase kullandım
-Görünütülü arama için agora kullandım ki kendisi deneme sürümüdür ve nedendir bilinmez çok iyi çalışmıyır ama bu sadece deneme
-Yeni bir şifreleme üzerinde çalışıyorum ki aslında sadece bana yeni çoğusu onu RSA olarak biliyor. 
-Şifreli mesaj firebase de duracak oradan da diğer kullanıcıların özel anahtarlarıyla çözülecek.
 
-This project is a starting point for a Flutter application.
+1. Clone the repository: `git clone https://github.com/MURABIT-PASHA/ArenApp.git`
+2. Install the Flutter SDK: https://flutter.dev/docs/get-started/install
+3. Open the project in your preferred code editor
+4. Connect a device or launch an emulator
+5. Run the app: `flutter run`
 
-A few resources to get you started if this is your first Flutter project:
+## Prerequisites
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- Flutter SDK: https://flutter.dev/docs/get-started/install
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Installing
+
+1. Clone the repository: `git clone https://github.com/MURABIT-PASHA/ArenApp.git`
+2. Install the Flutter SDK: https://flutter.dev/docs/get-started/install
+3. Open the project in your preferred code editor
+4. Connect a device or launch an emulator
+5. Run the app: `flutter run`
+
+## Running the tests
+
+1. Run the tests: `flutter test`
+
+## Deployment
+
+Instructions for building and releasing the app for production.
+
+## Built With
+
+- [Flutter](https://flutter.dev/)
+
+## Contributing
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push the branch: `git push origin my-new-feature`
+5. Submit a pull request
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/[USERNAME]/flutter-app/tags).
+
+## Authors
+
+- [Your Name](https://github.com/[USERNAME])
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Flutter team](https://flutter.dev/) for creating the Flutter framework

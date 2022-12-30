@@ -31,7 +31,7 @@ class ReceivedMessageScreen extends StatelessWidget {
                 AnimatedTextKit(
                   totalRepeatCount: 1,
                   animatedTexts: [
-                    TypewriterAnimatedText(message,textStyle: TextStyle(color: Colors.cyan.shade900, fontSize: 14),textAlign: TextAlign.left,speed: Duration(milliseconds: 100)),
+                    TypewriterAnimatedText(message,textStyle: TextStyle(color: Colors.cyan.shade900, fontSize: 14),textAlign: TextAlign.left,speed: Duration(milliseconds: 50)),
                   ],
                 ),
                 Text(

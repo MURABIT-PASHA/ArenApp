@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 class OpenAI{
-  final String _apiKey = "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";
+  final String _apiKey = "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";
   final String _model = "text-davinci-003";
   final String prompt;
   final int _maxTokens = 100;
