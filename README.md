@@ -49,7 +49,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-- [Your Name](https://github.com/MURABIT-PASHA)
+- [MURABIT-PASHA](https://github.com/MURABIT-PASHA)
 
 ## License
 
