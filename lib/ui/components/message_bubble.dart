@@ -1,6 +1,6 @@
+import 'package:arenapp/ui/components/received_message_screen.dart';
+import 'package:arenapp/ui/components/sent_message_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:arenapp/components/received_message_screen.dart';
-import 'package:arenapp/components/sent_message_screen.dart';
 
 class MessageBubble extends StatelessWidget {
   final String prompt;

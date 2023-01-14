@@ -1,8 +1,8 @@
-import 'package:arenapp/components/constants.dart';
-import 'package:arenapp/components/navigation_drawer.dart';
-import 'package:arenapp/components/rounded_button.dart';
-import 'package:arenapp/pages/progress/chat_page.dart';
+import 'package:arenapp/ui/widgets/solution_widget.dart';
 import 'package:flutter/material.dart';
+import '../../components/navigation_drawer.dart';
+import '../../components/rounded_button.dart';
+import 'chat_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,8 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String itemName = "Conversation";
-  final itemHint = "Add your conversation name";
   List itemList = [];
 
   @override
@@ -65,7 +63,11 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (builder)=>ChatPage(title: itemList[index])));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (builder) =>
+                                  ChatPage(title: itemList[index])));
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),
@@ -104,42 +106,10 @@ class _HomePageState extends State<HomePage> {
           ),
           floatingActionButton: RoundedButton(
             onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (builder) => Dialog(
-                        child: Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width - 100,
-                            height: MediaQuery.of(context).size.height -200,
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextField(
-                                  decoration: kTextFieldDecoration.copyWith(
-                                    hintText: itemHint,
-                                  ),
-                                  onChanged: (value) {
-                                      itemName = value;
-                                  },
-                                ),
-                                RoundedButton(
-                                    colour: Colors.black54,
-                                    buttonTitle: 'Create',
-                                    onPressed: () {
-                                      setState(() {
-                                        itemList.add(itemName);
-                                      });
-                                      Navigator.pop(context);
-                                    })
-                              ],
-                            ),
-                          ),
-                        ),
-                      ));
+              Navigator.push(context, MaterialPageRoute(builder: (builder) => SolutionForm()));
             },
             colour: Colors.black12,
-            buttonTitle: 'Create New Conversation',
+            buttonTitle: 'Create Solution',
           ),
         ),
       ),

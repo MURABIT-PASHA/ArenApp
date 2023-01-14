@@ -1,7 +1,7 @@
-import 'package:arenapp/components/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:arenapp/components/welcome_text_action.dart';
 import 'package:flutter/services.dart';
+import '../../components/constants.dart';
+import '../../components/welcome_text_action.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome_screen';

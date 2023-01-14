@@ -1,6 +1,6 @@
-import 'package:arenapp/pages/progress/home_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:arenapp/pages/entry/models/onboard_model.dart';
+import '../progress/home_page.dart';
+import './models/onboard_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

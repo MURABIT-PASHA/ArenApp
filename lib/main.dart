@@ -1,6 +1,6 @@
-import 'package:arenapp/pages/entry/welcome_page.dart';
+import 'package:arenapp/ui/pages/entry/welcome_page.dart';
 import 'package:flutter/material.dart';
-import 'package:arenapp/pages/entry/onboard_page.dart';
+import 'package:arenapp/ui/pages/entry/onboard_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

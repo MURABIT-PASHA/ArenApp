@@ -1,8 +1,8 @@
-import 'package:arenapp/pages/entry/onboard_page.dart';
-import 'package:arenapp/pages/progress/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import '../pages/entry/onboard_page.dart';
+import '../pages/progress/home_page.dart';
 
 class WelcomeTextAction extends StatefulWidget {
   const WelcomeTextAction({Key? key}) : super(key: key);

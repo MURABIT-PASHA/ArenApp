@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:arenapp/data/model/conversation.dart';
 import 'package:arenapp/data/model/open_ai.dart';
 import 'package:flutter/material.dart';
-import 'package:arenapp/components/message_bubble.dart';
-import 'package:arenapp/components/constants.dart';
 import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
+import '../../components/constants.dart';
+import '../../components/message_bubble.dart';
 
 class ChatPage extends StatefulWidget {
   final String title;
