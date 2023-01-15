@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:arenapp/ui/components/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'models/sign_up_model.dart';
+import '../../widgets/sign_up_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override

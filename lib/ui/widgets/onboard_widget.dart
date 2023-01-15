@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-class OnboardModel extends StatelessWidget {
-  OnboardModel(
+class OnboardWidget extends StatelessWidget {
+  OnboardWidget(
       {
       required this.urlImage,
       required this.title,

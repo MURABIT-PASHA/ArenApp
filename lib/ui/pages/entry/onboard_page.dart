@@ -1,7 +1,7 @@
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import './models/onboard_model.dart';
+import '../../widgets/onboard_widget.dart';
 import 'login_page.dart';
 
 class OnboardPage extends StatefulWidget {
@@ -56,17 +56,17 @@ class _OnboardPage extends State<OnboardPage> {
               });
             },
             children: [
-              OnboardModel(
+              OnboardWidget(
                   urlImage: 'assets/jsons/page1.json',
                   title: 'Easy to Use',
                   subtitle:
                       'The app provides to direct chat. And there is no ads in it.'),
-              OnboardModel(
+              OnboardWidget(
                   urlImage: 'assets/jsons/page2.json',
                   title: 'Ask Anything',
                   subtitle:
                       'You can easily ask anything you want. Until your questions is not special.'),
-              OnboardModel(
+              OnboardWidget(
                   urlImage: 'assets/jsons/page3.json',
                   title: 'Let\'s Get Started',
                   subtitle:

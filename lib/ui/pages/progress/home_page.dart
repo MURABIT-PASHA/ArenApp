@@ -1,5 +1,8 @@
-import 'package:arenapp/ui/widgets/solution_widget.dart';
+import 'package:arenapp/ui/widgets/solution_form_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../components/navigation_drawer.dart';
 import '../../components/rounded_button.dart';
 import 'chat_page.dart';
@@ -11,7 +14,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List itemList = [];
+  String _userMail = "";
+  final user = FirebaseAuth.instance.currentUser!;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _getUserName() async {
+    _userMail = (await user.email)!;
+  }
+
+  @override
+  void initState() {
+    _getUserName();
+    super.initState();
+  }
+  Widget _getSolutionPage(String type){
+    switch(type){
+      case "conText":
+        return ChatPage();
+      default:
+        return Center();
+    }
+  }
+  String _getSolutionDescription(String type){
+    switch(type){
+      case "conText":
+        return "Conversation with AI";
+      default:
+        return "Error";
+    }
+  }
+
+  Widget _getSolutionImage(String type){
+    switch(type){
+      case "conText":
+        return SvgPicture.asset("assets/icons/text_solution.svg");
+      default:
+        return Icon(Icons.error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,79 +74,102 @@ class _HomePageState extends State<HomePage> {
             ),
             backgroundColor: Color(0xFF0E1937),
           ),
-          body: ListView.builder(
-            itemCount: itemList.length,
-            itemBuilder: (BuildContext context, int index) {
-              final item = itemList[index];
-              return Dismissible(
-                key: Key(item),
-                background: Container(
-                  color: Colors.red,
-                  child: Center(
-                    child: Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                      size: 75,
-                    ),
-                  ),
-                ),
-                direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
-                  setState(() {
-                    itemList.removeAt(index);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Conversation removed")));
-                },
-                child: Container(
-                  height: 100,
-                  width: MediaQuery.of(context).size.width,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (builder) =>
-                                  ChatPage(title: itemList[index])));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CircleAvatar(
-                            radius: 40.0,
+          body: StreamBuilder<QuerySnapshot>(
+            stream:
+                _firestore.collection(_userMail).orderBy('date').snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData == true) {
+                final solutions = snapshot.data?.docs;
+                List<dynamic> solutionList = [];
+                for (var solution in solutions!) {
+                  solutionList.add(solution);
+                }
+                return ListView.builder(
+                  itemCount: solutionList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final item = solutionList[index];
+                    return Dismissible(
+                      key: Key(item),
+                      background: Container(
+                        color: Colors.red,
+                        child: Center(
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                            size: 75,
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                itemList[index],
-                                style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ),
-                              Text(
-                                '0 messages',
-                                style: TextStyle(color: Colors.white70),
-                                textAlign: TextAlign.right,
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              );
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (direction) async {
+                        try {
+                          await _firestore
+                              .collection(_userMail)
+                              .doc(solutionList[index].id)
+                              .delete();
+                        } catch (e) {
+                          print(e);
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Solution removed")));
+                      },
+                      child: Container(
+                        height: 100,
+                        width: MediaQuery.of(context).size.width,
+                        child: InkWell(
+                          onTap: () {
+                            final solutionType =
+                                solutionList[index].get('name');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (builder) =>_getSolutionPage(solutionType)));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CircleAvatar(
+                                  child: _getSolutionImage(solutionList[index].get('name')),
+                                  radius: 40.0,
+                                ),
+                                Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _getSolutionDescription(solutionList[index].get('name')),
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
+                                    ),
+                                    Text(
+                                      '0 messages',
+                                      style: TextStyle(color: Colors.white70),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return Center();
+              }
             },
           ),
           floatingActionButton: RoundedButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (builder) => SolutionForm()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (builder) => SolutionFormWidget()));
             },
             colour: Colors.black12,
             buttonTitle: 'Create Solution',

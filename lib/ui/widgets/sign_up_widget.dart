@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import '../../../components/constants.dart';
-import '../provider/google_sign.dart';
+import '../components/constants.dart';
+import '../pages/entry/provider/google_sign.dart';
 
 class SignUpWidget extends StatefulWidget {
   const SignUpWidget({Key? key}) : super(key: key);
@@ -12,17 +13,22 @@ class SignUpWidget extends StatefulWidget {
 }
 
 class _SignUpWidgetState extends State<SignUpWidget> {
+  final _auth = FirebaseAuth.instance;
   double _logoSize = 100;
   final Curve _curve = Curves.easeInOut;
   String _email = "";
   String _password = "";
   bool _showPassword = false;
   bool _isLoginPage = false;
+  bool _control() {
+    if (_email != "" && _password != "")
+      return true;
+    else
+      return false;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.grey,
       body: Container(
@@ -97,14 +103,43 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15))),
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (_control()) {
+                          try {
+                            await _auth.signInWithEmailAndPassword(
+                                email: _email, password: _password);
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content:
+                                    Text("User mail or password is wrong")));
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Please fill all blanks")));
+                        }
+                      },
                       child: Text("Log In"))
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15))),
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (_control()) {
+                          try {
+                            await _auth.createUserWithEmailAndPassword(
+                                email: _email, password: _password);
+                            await _auth.signInWithEmailAndPassword(
+                                email: _email, password: _password);
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("Already have an user")));
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Please fill all blanks")));
+                        }
+                      },
                       child: Text("Sign Up")),
               Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 10),
@@ -123,13 +158,13 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                   backgroundColor: Colors.transparent,
                   shape: CircleBorder(),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     _logoSize = 150;
                   });
                   final provider =
                       Provider.of<GoogleSignInProvider>(context, listen: false);
-                  provider.googleLogin();
+                  await provider.googleLogin();
                 },
                 child: SvgPicture.asset('assets/icons/google.svg',
                     semanticsLabel: 'Google Logo'),

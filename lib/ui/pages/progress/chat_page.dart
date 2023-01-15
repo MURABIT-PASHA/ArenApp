@@ -11,8 +11,7 @@ import '../../components/constants.dart';
 import '../../components/message_bubble.dart';
 
 class ChatPage extends StatefulWidget {
-  final String title;
-  const ChatPage({Key? key, required this.title}) : super(key: key);
+  const ChatPage({Key? key}) : super(key: key);
   @override
   _ChatPageState createState() => _ChatPageState();
 }

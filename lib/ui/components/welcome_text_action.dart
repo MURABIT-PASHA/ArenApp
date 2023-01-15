@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import '../pages/entry/onboard_page.dart';
-import '../pages/progress/home_page.dart';
 
 class WelcomeTextAction extends StatefulWidget {
   const WelcomeTextAction({Key? key}) : super(key: key);
@@ -15,37 +14,29 @@ class WelcomeTextAction extends StatefulWidget {
 class _WelcomeTextActionState extends State<WelcomeTextAction> {
   late Widget screen;
 
-  Future<bool> _isLoggedIn() async{
-    final prefs = await SharedPreferences.getInstance();
-    final isLogged = prefs.getBool('isLogged') ?? false;
-    return isLogged;
-  }
-  Future<bool> _isOnboardShowed() async{
+  Future<bool> _isOnboardShowed() async {
     final prefs = await SharedPreferences.getInstance();
     final isShowed = prefs.getBool('isOnboardShowed') ?? false;
     return isShowed;
   }
-  Future<Widget> _getPreferences() async{
+
+  Future<Widget> _getPreferences() async {
     final bool isShowed = await _isOnboardShowed();
-    final bool isLogged = await _isLoggedIn();
-    if(isShowed){
-      if(isLogged){
-        return HomePage();
-      }
-      else{
-        return LoginPage();
-      }
-    }
-    else{
+    if (isShowed) {
+      return LoginPage();
+    } else {
       return OnboardPage();
     }
   }
-  void _getScreen()async{
+
+  void _getScreen() async {
     screen = await _getPreferences();
     setState(() {
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>screen), (route) => false);
+      Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (builder) => screen), (route) => false);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -55,15 +46,16 @@ class _WelcomeTextActionState extends State<WelcomeTextAction> {
           fontSize: 40.0,
           fontFamily: 'UbuntuMono',
           fontWeight: FontWeight.bold,
-
         ),
         child: AnimatedTextKit(
           totalRepeatCount: 1,
-          onFinished: (){
+          onFinished: () {
             _getScreen();
           },
           animatedTexts: [
-            TypewriterAnimatedText(' ArenApp',textAlign: TextAlign.center,speed: Duration(milliseconds: 200)),
+            TypewriterAnimatedText(' ArenApp',
+                textAlign: TextAlign.center,
+                speed: Duration(milliseconds: 200)),
           ],
           onTap: () {
             print("Tap Event");

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "200643990430-0kkqiaj3gu44ich4gt78u6t6vbsl2v87.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.arena.arenapp",
+            "certificate_hash": "18a4911281692a2b6816823ebb3fc1ede8559b96"
+          }
+        },
+        {
           "client_id": "200643990430-33fur3c098tbolnqlgm775au3kr60p59.apps.googleusercontent.com",
           "client_type": 3
         }

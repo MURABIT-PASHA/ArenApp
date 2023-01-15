@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import '../components/constants.dart';
 import '../components/rounded_button.dart';
 
-class SolutionForm extends StatefulWidget {
-  const SolutionForm({Key? key}) : super(key: key);
+class SolutionFormWidget extends StatefulWidget {
+  const SolutionFormWidget({Key? key}) : super(key: key);
 
   @override
-  State<SolutionForm> createState() => _SolutionFormState();
+  State<SolutionFormWidget> createState() => _SolutionFormWidgetState();
 }
 
-class _SolutionFormState extends State<SolutionForm> {
+class _SolutionFormWidgetState extends State<SolutionFormWidget> {
   String _solution = "";
   String _itemName = "Solution";
   final _itemHint = "Type your solution name";
