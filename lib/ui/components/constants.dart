@@ -94,3 +94,25 @@ const kPageOneColor = Color(0xFF29BFDF);
 const kPageTwoColor = Color(0xFFFF614E);
 const kPageThreeColor = Color(0xFFE29D17);
 const kPageSkipTextColor = Color(0xFF26283C);
+final kHintTextStyle = TextStyle(
+  color: Colors.white54,
+  fontFamily: 'Poppins',
+);
+
+final kLabelStyle = TextStyle(
+  color: Colors.white,
+  fontWeight: FontWeight.bold,
+  fontFamily: 'Poppins',
+);
+
+final kBoxDecorationStyle = BoxDecoration(
+  color: Color(0xFF6CA8F1),
+  borderRadius: BorderRadius.circular(10.0),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black12,
+      blurRadius: 6.0,
+      offset: Offset(0, 2),
+    ),
+  ],
+);

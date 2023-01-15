@@ -1,8 +1,8 @@
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../progress/home_page.dart';
-import './models/onboard_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import './models/onboard_model.dart';
+import 'login_page.dart';
 
 class OnboardPage extends StatefulWidget {
   static const String id = 'onboardScreen';
@@ -105,7 +105,7 @@ class _OnboardPage extends State<OnboardPage> {
           onPressed: () async {
             final prefs = await SharedPreferences.getInstance();
             prefs.setBool('showHome', true);
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>HomePage()),(route) => false);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>LoginPage()),(route) => false);
           },
         );
       default:

@@ -3,15 +3,15 @@ import 'package:flutter/services.dart';
 import '../../components/constants.dart';
 import '../../components/welcome_text_action.dart';
 
-class WelcomeScreen extends StatefulWidget {
+class SplashPage extends StatefulWidget {
   static const String id = 'welcome_screen';
 
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const SplashPage({Key? key}) : super(key: key);
   @override
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  _SplashPageState createState() => _SplashPageState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _SplashPageState extends State<SplashPage> {
   @override
   void dispose() {
     super.dispose();
