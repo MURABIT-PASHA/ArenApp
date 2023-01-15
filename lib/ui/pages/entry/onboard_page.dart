@@ -96,7 +96,7 @@ class _OnboardPage extends State<OnboardPage> {
             minimumSize: const Size.fromHeight(80.0),
           ),
           child: const Text(
-            'Tackle In',
+            'Start Now',
             style: TextStyle(
                 fontSize: 45,
                 fontFamily: 'Poppins',
@@ -104,7 +104,7 @@ class _OnboardPage extends State<OnboardPage> {
           ),
           onPressed: () async {
             final prefs = await SharedPreferences.getInstance();
-            prefs.setBool('showHome', true);
+            prefs.setBool('isOnboardShowed', true);
             Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>LoginPage()),(route) => false);
           },
         );

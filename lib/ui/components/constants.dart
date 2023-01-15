@@ -1,23 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-const kSendButtonTextStyle = TextStyle(
-  color: Colors.lightBlueAccent,
-  fontWeight: FontWeight.bold,
-  fontSize: 18.0,
-);
-
-const kMessageTextFieldDecoration = InputDecoration(
-  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-  hintText: 'Mesajınızı buraya yazınız...',
-  border: InputBorder.none,
-);
-
-const kMessageContainerDecoration = BoxDecoration(
-  border: Border(
-    top: BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-  ),
-);
 
 const kLabelTextColor = Colors.white;
 const kLabelTextColor1 = Colors.teal;
@@ -97,22 +80,4 @@ const kPageSkipTextColor = Color(0xFF26283C);
 final kHintTextStyle = TextStyle(
   color: Colors.white54,
   fontFamily: 'Poppins',
-);
-
-final kLabelStyle = TextStyle(
-  color: Colors.white,
-  fontWeight: FontWeight.bold,
-  fontFamily: 'Poppins',
-);
-
-final kBoxDecorationStyle = BoxDecoration(
-  color: Color(0xFF6CA8F1),
-  borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
-    ),
-  ],
 );

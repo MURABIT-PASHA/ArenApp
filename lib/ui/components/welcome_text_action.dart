@@ -1,3 +1,4 @@
+import 'package:arenapp/ui/pages/entry/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -14,18 +15,33 @@ class WelcomeTextAction extends StatefulWidget {
 class _WelcomeTextActionState extends State<WelcomeTextAction> {
   late Widget screen;
 
-  Future<Widget> getPreferences() async{
+  Future<bool> _isLoggedIn() async{
     final prefs = await SharedPreferences.getInstance();
-    final showHome = prefs.getBool('showHome') ?? false;
-    if(showHome){
-     return HomePage();
+    final isLogged = prefs.getBool('isLogged') ?? false;
+    return isLogged;
+  }
+  Future<bool> _isOnboardShowed() async{
+    final prefs = await SharedPreferences.getInstance();
+    final isShowed = prefs.getBool('isOnboardShowed') ?? false;
+    return isShowed;
+  }
+  Future<Widget> _getPreferences() async{
+    final bool isShowed = await _isOnboardShowed();
+    final bool isLogged = await _isLoggedIn();
+    if(isShowed){
+      if(isLogged){
+        return HomePage();
+      }
+      else{
+        return LoginPage();
+      }
     }
     else{
       return OnboardPage();
     }
   }
-  void getScreen()async{
-    screen = await getPreferences();
+  void _getScreen()async{
+    screen = await _getPreferences();
     setState(() {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>screen), (route) => false);
     });
@@ -44,7 +60,7 @@ class _WelcomeTextActionState extends State<WelcomeTextAction> {
         child: AnimatedTextKit(
           totalRepeatCount: 1,
           onFinished: (){
-            getScreen();
+            _getScreen();
           },
           animatedTexts: [
             TypewriterAnimatedText(' ArenApp',textAlign: TextAlign.center,speed: Duration(milliseconds: 200)),
