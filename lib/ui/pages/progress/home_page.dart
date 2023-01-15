@@ -14,17 +14,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _userMail = "";
+  late String _userMail;
   final user = FirebaseAuth.instance.currentUser!;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _getUserName() async {
-    _userMail = (await user.email)!;
-  }
-
   @override
   void initState() {
-    _getUserName();
+    _userMail = (user.email)!;
     super.initState();
   }
   Widget _getSolutionPage(String type){
@@ -47,7 +43,7 @@ class _HomePageState extends State<HomePage> {
   Widget _getSolutionImage(String type){
     switch(type){
       case "conText":
-        return SvgPicture.asset("assets/icons/text_solution.svg");
+        return SvgPicture.asset("assets/icons/text_solution.svg", color: Colors.red,);
       default:
         return Icon(Icons.error);
     }
@@ -76,18 +72,19 @@ class _HomePageState extends State<HomePage> {
           ),
           body: StreamBuilder<QuerySnapshot>(
             stream:
-                _firestore.collection(_userMail).orderBy('date').snapshots(),
+                _firestore.collection(_userMail).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData == true) {
                 final solutions = snapshot.data?.docs;
                 List<dynamic> solutionList = [];
                 for (var solution in solutions!) {
                   solutionList.add(solution);
+                  print(solution.id);
                 }
                 return ListView.builder(
                   itemCount: solutionList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final item = solutionList[index];
+                    final item = solutionList[index].id;
                     return Dismissible(
                       key: Key(item),
                       background: Container(
