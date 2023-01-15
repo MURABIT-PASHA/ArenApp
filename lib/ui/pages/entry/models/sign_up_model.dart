@@ -17,6 +17,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
   String _email = "";
   String _password = "";
   bool _showPassword = false;
+  bool _isLoginPage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,100 +50,112 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                 },
                 keyboardType: TextInputType.visiblePassword,
                 decoration: kTextFieldDecoration.copyWith(
-                  prefixIcon: Icon(Icons.person, color: Colors.grey,),
+                  prefixIcon: Icon(
+                    Icons.person,
+                    color: Colors.grey,
+                  ),
                   hintText: 'Type your mail address',
                   filled: true,
                   fillColor: Colors.green,
                 ),
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
               TextField(
                 onChanged: (value) {
                   _email = value;
                 },
                 keyboardType: TextInputType.emailAddress,
                 decoration: kTextFieldDecoration.copyWith(
-                  prefixIcon: Icon(Icons.lock, color: Colors.grey,),
-                  hintText: 'Type your password',
-                  filled: true,
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: Colors.grey,
+                    ),
+                    hintText: 'Type your password',
+                    filled: true,
                     fillColor: Colors.green,
-                  suffixIcon: IconButton(onPressed: (){
-                    setState(() {
-                      _showPassword =!_showPassword;
-                    });
-                  }, icon: Icon(_showPassword?Icons.remove_red_eye_rounded:Icons.remove_red_eye_outlined),color: Colors.grey,)
-                ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _showPassword = !_showPassword;
+                        });
+                      },
+                      icon: Icon(_showPassword
+                          ? Icons.remove_red_eye_rounded
+                          : Icons.remove_red_eye_outlined),
+                      color: Colors.grey,
+                    )),
                 obscureText: _showPassword,
               ),
-              Padding(padding: EdgeInsets.only(top: 10, bottom: 10),
-              child: Text("Or Sign In with", style: TextStyle(color: Colors.black38,),textAlign: TextAlign.center,),),
-              Container(
-                alignment: Alignment.center,
-                width: width - 10,
-                height: 75,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Sign Up with Google Button
-                    ElevatedButton(
+              SizedBox(
+                height: 25,
+              ),
+              _isLoginPage
+                  ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.transparent,
-                        shape: CircleBorder(),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _logoSize = 150;
-                        });
-                        final provider = Provider.of<GoogleSignInProvider>(
-                            context,
-                            listen: false);
-                        provider.googleLogin();
-                      },
-                      child: SvgPicture.asset('assets/icons/google.svg',
-                          semanticsLabel: 'Google Logo'),
-                    ),
-                    // Sign Up with Facebook button
-                    ElevatedButton(
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      onPressed: () {},
+                      child: Text("Log In"))
+                  : ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.transparent,
-                        shape: CircleBorder(),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _logoSize = 150;
-                        });
-                        final provider = Provider.of<GoogleSignInProvider>(
-                            context,
-                            listen: false);
-                        provider.googleLogin();
-                      },
-                      child: SvgPicture.asset(
-                        'assets/icons/facebook.svg',
-                        semanticsLabel: 'Facebook Logo',
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ],
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      onPressed: () {},
+                      child: Text("Sign Up")),
+              Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: Text(
+                  "Or Sign In with",
+                  style: TextStyle(
+                    color: Colors.black38,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-              // Login Text
-              RichText(
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.ltr,
-                text: TextSpan(
-                  children: [
-                    const TextSpan(
-                        text: 'Already have an account?',
-                        style: TextStyle(color: Colors.black45)),
-                    WidgetSpan(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text("Log in"),
-                        ),
-                        alignment: PlaceholderAlignment.middle)
-                  ],
+              // Sign Up with Google Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  shape: CircleBorder(),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _logoSize = 150;
+                  });
+                  final provider =
+                      Provider.of<GoogleSignInProvider>(context, listen: false);
+                  provider.googleLogin();
+                },
+                child: SvgPicture.asset('assets/icons/google.svg',
+                    semanticsLabel: 'Google Logo'),
+              ),
+              Visibility(
+                visible: !_isLoginPage,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  textDirection: TextDirection.ltr,
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                          text: 'Already have an account?',
+                          style: TextStyle(color: Colors.black45)),
+                      WidgetSpan(
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _isLoginPage = true;
+                              });
+                            },
+                            child: const Text("Log in"),
+                          ),
+                          alignment: PlaceholderAlignment.middle)
+                    ],
+                  ),
                 ),
               )
             ],
