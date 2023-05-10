@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       child: ClipRect(
         child: Scaffold(
-          drawer: NavigationDrawer(),
+          drawer: CustomNavigationDrawer(),
           extendBody: true,
           appBar: AppBar(
             centerTitle: true,

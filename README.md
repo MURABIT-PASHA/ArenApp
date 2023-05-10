@@ -7,7 +7,7 @@ Our app is designed to be user-friendly and intuitive. All you have to do is typ
 
 We hope you enjoy using our AI chat app! Whether you're looking for a virtual companion, a source of inspiration, or a new way to pass the time, our app has something for everyone.
 
-![Flutter App Demo](blob/demo.gif)
+<img src="blob/demo.gif" alt="Flutter App Demo" width="300" height="400">
 
 ## Getting Started
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'constants.dart';
 
-class NavigationDrawer extends StatelessWidget {
+class CustomNavigationDrawer extends StatelessWidget {
   final padding = EdgeInsets.symmetric(horizontal: 20.0);
   bool isTurkish = false;
   String langName = "en_GB";

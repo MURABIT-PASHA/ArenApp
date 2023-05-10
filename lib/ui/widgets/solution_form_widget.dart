@@ -14,7 +14,6 @@ class SolutionFormWidget extends StatefulWidget {
 
 class _SolutionFormWidgetState extends State<SolutionFormWidget> {
   String _solution = "";
-  String _itemName = "Solution";
   final _itemHint = "Type your solution name";
   final _imageSolutions = [
     'Pixelate Generator',
@@ -55,7 +54,6 @@ class _SolutionFormWidgetState extends State<SolutionFormWidget> {
                     hintText: _itemHint,
                   ),
                   onChanged: (value) {
-                    _itemName = value;
                   },
                 ),
               ),
