@@ -1,4 +1,6 @@
 # ArenApp
+
+(If you see this, that means this project not done yet. Sorry)
 Welcome to our AI chat app! With this app, you can have meaningful conversations with an artificial intelligence, anytime and anywhere. Whether you want to ask for advice, seek guidance, or just have a casual chat, our AI is here to listen and respond.
 
 Our AI is powered by state-of-the-art natural language processing technology, which allows it to understand and respond to a wide range of inputs. It is constantly learning and evolving, so the more you chat with it, the smarter it becomes.
